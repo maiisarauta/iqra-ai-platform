@@ -5,6 +5,6 @@ from app.api.analyze_text import router as text_router
 
 router = APIRouter()
 
-router.include_router(health_router, tags=["Health"])
-router.include_router(audio_router, prefix="/analyze", tags=["Audio"])
-router.include_router(text_router, prefix="/analyze", tags=["Text"])
+router.include_router(health_router)
+router.include_router(text_router)
+router.include_router(audio_router)
