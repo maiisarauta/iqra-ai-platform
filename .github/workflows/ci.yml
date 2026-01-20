@@ -23,10 +23,6 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Install project (editable)
-        run: |
-          pip install -e .
-
       - name: Run tests
         env:
           PYTHONPATH: .
