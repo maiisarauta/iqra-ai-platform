@@ -1,14 +1,20 @@
-from fastapi import APIRouter, Form
+from fastapi import APIRouter, Form, UploadFile, File
 from app.core.security import enforce_submission_limit
 from app.core.controller import analyze_audio
+from app.schemas.request import AnalyzeAudioRequest
+from app.schemas.response import AnalyzeResponse
 
 router = APIRouter()
 
-@router.post("/audio")
-async def analyze_audio_endpoint(
-    ayah_ref: str = Form(...),
-    submission_count: int = Form(...)
+
+@router.post("/analyze/audio", response_model=AnalyzeResponse)
+def analyze_audio(
+    payload: AnalyzeAudioRequest,
+    audio: UploadFile = File(...)
 ):
-    enforce_submission_limit(submission_count)
-    result = await analyze_audio(ayah_ref=ayah_ref)
-    return result
+    return {
+        "engine": "mock-audio",
+        "confidence_score": 0.88,
+        "mistakes": [],
+        "corrections": []
+    }
