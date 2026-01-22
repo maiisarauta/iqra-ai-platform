@@ -1,13 +1,13 @@
-from abc import ABC, abstractmethod
+from app.engines.mock.audio import MockAudioEngine
+from app.engines.mock.text import MockTextEngine
 
 
-class TextEngine(ABC):
-    @abstractmethod
-    def analyze(self, text: str, ayah_reference: str) -> dict:
-        pass
+class EngineFactory:
 
+    @staticmethod
+    def get_audio_engine():
+        return MockAudioEngine()
 
-class AudioEngine(ABC):
-    @abstractmethod
-    def analyze(self, duration: int, ayah_reference: str) -> dict:
-        pass
+    @staticmethod
+    def get_text_engine():
+        return MockTextEngine()

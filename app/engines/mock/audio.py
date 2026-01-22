@@ -1,7 +1,9 @@
 class MockAudioEngine:
-    def analyze(self, duration: int, ayah_reference: str) -> dict:
+
+    def analyze(self, audio_bytes: bytes, ayah_reference: str) -> dict:
         return {
-            "ayah_reference": ayah_reference,
-            "confidence": 0.78,
-            "tajweed_errors": [],
+            "engine": "mock-audio",
+            "mistakes": [],
+            "corrections": [],
+            "confidence_score": 0.78
         }

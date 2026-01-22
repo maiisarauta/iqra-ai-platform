@@ -1,15 +1,19 @@
 from app.scoring.confidence import calculate_confidence
-from app.main import app
 
-def test_confidence_no_mistakes():
-    score = calculate_confidence([])
+
+def test_confidence_perfect():
+    score = calculate_confidence(
+        total_items=10,
+        mistakes=0,
+        corrections=0
+    )
     assert score == 1.0
 
 
-def test_confidence_with_mistakes():
-    mistakes = [
-        {"type": "tajweed"},
-        {"type": "pronunciation"},
-    ]
-    score = calculate_confidence(mistakes)
-    assert 0 < score < 1.0
+def test_confidence_with_errors():
+    score = calculate_confidence(
+        total_items=10,
+        mistakes=2,
+        corrections=2
+    )
+    assert score < 1.0

@@ -1,22 +1,19 @@
-from fastapi import APIRouter, Form, UploadFile, File
-from app.core.security import enforce_submission_limit
-from app.core.controller import analyze_audio
+from fastapi import APIRouter, UploadFile, File, Form
 from app.schemas.request import AnalyzeAudioRequest
-from app.schemas.response import AnalyzeResponse
+from app.schemas.response import AnalysisResponse
+from app.core.controller import AnalysisController
 
 router = APIRouter()
 
 
-@router.post("/analyze/audio", response_model=AnalyzeResponse)
-def analyze_audio_endpoint(payload: AnalyzeAudioRequest):
-    result = analyze_audio(
-        duration=payload.audio_duration_seconds,
-        ayah_reference=payload.ayah_reference
-    )
+@router.post("/analyze/audio", response_model=AnalysisResponse)
+async def analyze_audio_endpoint(
+    ayah_reference: str = Form(...),
+    audio: UploadFile = File(...)
+):
+    audio_bytes = await audio.read()
 
-    return {
-        "engine": "mock-audio",
-        "confidence_score": result["confidence"],
-        "mistakes": result.get("tajweed_errors", []),
-        "corrections": []
-    }
+    return AnalysisController.analyze_audio(
+        audio_bytes=audio_bytes,
+        ayah_reference=ayah_reference
+    )

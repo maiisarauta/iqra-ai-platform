@@ -1,13 +1,14 @@
-from app.engines.mock.audio import MockAudioEngine
-from app.engines.mock.text import MockTextEngine
-
-audio_engine = MockAudioEngine()
-text_engine = MockTextEngine()
+from app.core.engine import EngineFactory
 
 
-def analyze_text(text: str, ayah_reference: str) -> dict:
-    return text_engine.analyze(text, ayah_reference)
+class AnalysisController:
 
+    @staticmethod
+    def analyze_audio(audio_bytes: bytes, ayah_reference: str) -> dict:
+        engine = EngineFactory.get_audio_engine()
+        return engine.analyze(audio_bytes, ayah_reference)
 
-def analyze_audio(duration: int, ayah_reference: str) -> dict:
-    return audio_engine.analyze(duration, ayah_reference)
+    @staticmethod
+    def analyze_text(text: str, ayah_reference: str) -> dict:
+        engine = EngineFactory.get_text_engine()
+        return engine.analyze(text, ayah_reference)

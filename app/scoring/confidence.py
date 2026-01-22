@@ -1,26 +1,20 @@
-from typing import List, Dict
-
-PENALTIES = {
-    "pronunciation": 5,
-    "tajweed": 7,
-    "elongation": 3,
-    "spelling": 4,
-    "skipped": 10,
-}
-
-
-def calculate_confidence(mistakes: List[Dict]) -> float:
+def calculate_confidence(
+    total_items: int,
+    mistakes: int,
+    corrections: int
+) -> float:
     """
-    Calculate confidence score between 0.0 and 1.0
-    based on detected mistakes.
+    Simple confidence scoring logic.
+
+    - total_items: number of expected words/phonemes
+    - mistakes: number of detected mistakes
+    - corrections: number of suggested corrections
     """
-    score = 100
 
-    for mistake in mistakes:
-        penalty = PENALTIES.get(mistake.get("type"), 2)
-        score -= penalty
+    if total_items <= 0:
+        return 0.0
 
-    if score < 0:
-        score = 0
+    penalty = mistakes + (corrections * 0.5)
+    score = max(0.0, 1.0 - (penalty / total_items))
 
-    return round(score / 100, 2)
+    return round(score, 2)

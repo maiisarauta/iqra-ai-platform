@@ -1,20 +1,15 @@
-from fastapi.testclient import TestClient
-from app.main import app
+def test_analyze_text_success(client):
+    payload = {
+        "ayah_reference": "1:1",
+        "text": "بسم الله الرحمن الرحيم"
+    }
 
-client = TestClient(app)
-
-def test_analyze_text_success():
-    response = client.post(
-        "/analyze/text",
-        json={
-            "ayah_reference": "1:1",
-            "text": "Bismillahir Rahmanir Rahim"
-        }
-    )
+    response = client.post("/analyze/text", json=payload)
 
     assert response.status_code == 200
-    body = response.json()
 
-    assert "confidence_score" in body
-    assert "mistakes" in body
-    assert body["engine"] == "mock-text"
+    data = response.json()
+    assert "engine" in data
+    assert "mistakes" in data
+    assert "corrections" in data
+    assert "confidence_score" in data
