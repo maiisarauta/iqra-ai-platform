@@ -1,7 +1,7 @@
 class MockAudioEngine:
-    async def analyze(self, *, ayah_ref: str) -> dict:
+    def analyze(self, duration: int, ayah_reference: str) -> dict:
         return {
-            "mistakes": ["mock: pronunciation issue"],
-            "corrections": ["mock: correct articulation"],
-            "confidence_score": 0.78
+            "ayah_reference": ayah_reference,
+            "confidence": 0.78,
+            "tajweed_errors": [],
         }

@@ -5,9 +5,9 @@ audio_engine = MockAudioEngine()
 text_engine = MockTextEngine()
 
 
-async def analyze_audio(*, ayah_ref: str) -> dict:
-    return await audio_engine.analyze(ayah_ref=ayah_ref)
+def analyze_text(text: str, ayah_reference: str) -> dict:
+    return text_engine.analyze(text, ayah_reference)
 
 
-async def analyze_text(*, text: str, ayah_ref: str) -> dict:
-    return await text_engine.analyze(text=text, ayah_ref=ayah_ref)
+def analyze_audio(duration: int, ayah_reference: str) -> dict:
+    return audio_engine.analyze(duration, ayah_reference)

@@ -8,13 +8,15 @@ router = APIRouter()
 
 
 @router.post("/analyze/audio", response_model=AnalyzeResponse)
-def analyze_audio(
-    payload: AnalyzeAudioRequest,
-    audio: UploadFile = File(...)
-):
+def analyze_audio_endpoint(payload: AnalyzeAudioRequest):
+    result = analyze_audio(
+        duration=payload.audio_duration_seconds,
+        ayah_reference=payload.ayah_reference
+    )
+
     return {
         "engine": "mock-audio",
-        "confidence_score": 0.88,
-        "mistakes": [],
+        "confidence_score": result["confidence"],
+        "mistakes": result.get("tajweed_errors", []),
         "corrections": []
     }

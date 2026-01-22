@@ -1,7 +1,8 @@
 class MockTextEngine:
-    async def analyze(self, *, text: str, ayah_ref: str) -> dict:
+    def analyze(self, text: str, ayah_reference: str) -> dict:
         return {
-            "mistakes": ["mock: spelling error"],
-            "corrections": ["mock: corrected spelling"],
-            "confidence_score": 0.88
+            "ayah_reference": ayah_reference,
+            "match_score": 0.85,
+            "mistakes": [],
+            "normalized_text": text.strip(),
         }
