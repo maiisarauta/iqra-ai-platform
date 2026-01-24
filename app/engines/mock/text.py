@@ -1,9 +1,25 @@
-class MockTextEngine:
+from typing import Dict
 
-    def analyze(self, text: str, ayah_reference: str) -> dict:
+from app.engines.base import BaseEngine
+from app.core.quran_repo import QuranRepo
+from app.core.text_compare import compare_text
+from app.scoring.confidence import calculate_confidence
+
+
+class MockTextEngine(BaseEngine):
+
+    def analyze(self, surah: int, ayah: int, text: str) -> Dict:
+        reference_text = QuranRepo.get_ayah(surah, ayah)
+
+        comparison = compare_text(
+            reference=reference_text,
+            input_text=text
+        )
+
         return {
-            "engine": "mock-text",
-            "mistakes": ["missing madd"],
-            "corrections": ["add madd on الرحمن"],
-            "confidence_score": 0.82
+            "surah": surah,
+            "ayah": ayah,
+            "confidence": comparison["confidence"],
+            "mistakes": comparison["mistakes"],
+            "corrections": comparison["corrections"],
         }

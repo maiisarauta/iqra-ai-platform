@@ -1,20 +1,25 @@
-def calculate_confidence(
-    total_items: int,
+def compute_confidence(
+    total_units: int,
     mistakes: int,
-    corrections: int
+    corrections: int,
+    mistake_weight: float = 1.0,
+    correction_weight: float = 0.5,
 ) -> float:
-    """
-    Simple confidence scoring logic.
 
-    - total_items: number of expected words/phonemes
-    - mistakes: number of detected mistakes
-    - corrections: number of suggested corrections
-    """
+    penalty = (mistakes * mistake_weight) + (corrections * correction_weight)
 
-    if total_items <= 0:
-        return 0.0
+    raw_score = 1.0 - (penalty / max(total_units, 1))
 
-    penalty = mistakes + (corrections * 0.5)
-    score = max(0.0, 1.0 - (penalty / total_items))
+    return round(max(0.0, min(1.0, raw_score)), 3)
 
-    return round(score, 2)
+def calculate_confidence(
+    mistakes: int,
+    total_units: int,
+    corrections: int = 0,
+) -> float:
+
+    return compute_confidence(
+        total_units=total_units,
+        mistakes=mistakes,
+        corrections=corrections,
+    )

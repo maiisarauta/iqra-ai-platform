@@ -1,16 +1,12 @@
 from pydantic import BaseModel, Field
 
 
-class AnalyzeTextRequest(BaseModel):
-    ayah_reference: str = Field(
-        ..., description="Surah:Ayah reference, e.g. 1:1"
-    )
-    text: str = Field(
-        ..., description="Student-written Qur'an text (Arabic)"
-    )
+class TextAnalysisRequest(BaseModel):
+    surah: int = Field(..., ge=1, le=114)
+    ayah: int = Field(..., ge=1)
+    text: str
 
 
-class AnalyzeAudioRequest(BaseModel):
-    ayah_reference: str = Field(
-        ..., description="Surah:Ayah reference, e.g. 1:1"
-    )
+class AudioAnalysisRequest(BaseModel):
+    surah: int = Field(..., ge=1, le=114)
+    ayah: int = Field(..., ge=1)

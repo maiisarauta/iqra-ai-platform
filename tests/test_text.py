@@ -1,6 +1,7 @@
 def test_analyze_text_success(client):
     payload = {
-        "ayah_reference": "1:1",
+        "surah": 1,
+        "ayah": 1,
         "text": "بسم الله الرحمن الرحيم"
     }
 
@@ -9,7 +10,8 @@ def test_analyze_text_success(client):
     assert response.status_code == 200
 
     data = response.json()
-    assert "engine" in data
+    assert data["surah"] == 1
+    assert data["ayah"] == 1
+    assert "confidence" in data
     assert "mistakes" in data
     assert "corrections" in data
-    assert "confidence_score" in data
