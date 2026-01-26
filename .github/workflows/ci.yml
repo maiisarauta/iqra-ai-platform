@@ -23,6 +23,12 @@ jobs:
         run: |
           pip install -r requirements.txt
 
+      - name: Build SQLite Database
+        run: |
+          mkdir -p data
+          python scripts/convert_tanzil_to_json.py
+          python scripts/build_quran_db.py
+
       - name: Run tests
         env:
           PYTHONPATH: .

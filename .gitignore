@@ -2,4 +2,5 @@ __pycache__/
 venv/
 .env/
 .pytest_cache/
-data/
+data/quran.db
+data/quran_full.json
