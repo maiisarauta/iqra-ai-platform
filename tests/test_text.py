@@ -1,16 +1,18 @@
-from app.core.controller import analyze_text_controller
+from app.core.quran_repo import QuranRepo
+from app.engines.mock.text import MockTextEngine
 
 
 def test_analyze_text_with_sqlite_quran():
-    result = analyze_text_controller(
-        text="بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ",
+    engine = MockTextEngine()
+    engine.quran_repo = QuranRepo
+
+    result = engine.analyze(
         surah=1,
         ayah=1,
+        text="بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ"
     )
 
     assert result["surah"] == 1
     assert result["ayah"] == 1
-    assert "confidence" in result
-    assert 0 <= result["confidence"] <= 1
-    assert isinstance(result["mistakes"], list)
-    assert isinstance(result["corrections"], list)
+    assert result["confidence"] > 0.9
+    assert result["mistakes"] == []
