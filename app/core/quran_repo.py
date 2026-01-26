@@ -1,41 +1,50 @@
 import json
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional
+
+from pathlib import Path
+from app.engines.quran.sqlite_loader import QuranSQLiteLoader
 
 
 class QuranRepo:
     """
-    Today: JSON
-    Lster: SQLite
+    Qur’an Repository
+
+    Single source of SQLite
+
+    - Provide ayah text to engines
+    - Prepare for future upgrade
     """
 
-    _DATA_PATH = Path(__file__).resolve().parent.parent / "engines" / "quran" / "data"
-    _CACHE: Dict[int, Dict] = {}
+    _loader = None
 
     @classmethod
-    def _load_surah(cls, surah: int) -> Dict:
-        if surah in cls._CACHE:
-            return cls._CACHE[surah]
+    def _get_db_path(cls) -> Path:
+        """
+        Path to quran.db
+        """
+        return (
+            Path(__file__)
+            .resolve()
+            .parents[2]
+            / "data"
+            / "quran.db"
+        )
 
-        file_path = cls._DATA_PATH / f"surah_{surah}.json"
-
-        if not file_path.exists():
-            raise ValueError(f"Surah {surah} not found in Qur’an data")
-
-        with open(file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-
-        cls._CACHE[surah] = data
-        return data
+    @classmethod
+    def _get_loader(cls) -> QuranSQLiteLoader:
+        """
+        Lazy-load SQLite loader
+        """
+        if cls._loader is None:
+            db_path = cls._get_db_path()
+            cls._loader = QuranSQLiteLoader(db_path=db_path)
+        return cls._loader
 
     @classmethod
     def get_ayah(cls, surah: int, ayah: int) -> str:
-        surah_data = cls._load_surah(surah)
+        """
+        Fetch ayah text from SQLite Qur’an database.
+        """
+        return cls._get_loader().get_ayah(surah, ayah)
 
-        ayahs = surah_data.get("ayahs", {})
-        ayah_text = ayahs.get(str(ayah))
-
-        if not ayah_text:
-            raise ValueError(f"Ayah {ayah} not found in Surah {surah}")
-
-        return ayah_text

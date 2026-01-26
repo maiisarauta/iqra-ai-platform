@@ -1,17 +1,16 @@
-def test_analyze_text_success(client):
-    payload = {
-        "surah": 1,
-        "ayah": 1,
-        "text": "بسم الله الرحمن الرحيم"
-    }
+from app.core.controller import analyze_text_controller
 
-    response = client.post("/analyze/text", json=payload)
 
-    assert response.status_code == 200
+def test_analyze_text_with_sqlite_quran():
+    result = analyze_text_controller(
+        text="بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ",
+        surah=1,
+        ayah=1,
+    )
 
-    data = response.json()
-    assert data["surah"] == 1
-    assert data["ayah"] == 1
-    assert "confidence" in data
-    assert "mistakes" in data
-    assert "corrections" in data
+    assert result["surah"] == 1
+    assert result["ayah"] == 1
+    assert "confidence" in result
+    assert 0 <= result["confidence"] <= 1
+    assert isinstance(result["mistakes"], list)
+    assert isinstance(result["corrections"], list)

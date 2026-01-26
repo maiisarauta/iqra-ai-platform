@@ -1,14 +1,5 @@
 import sys
-import os
-import pytest
-from fastapi.testclient import TestClient
+from pathlib import Path
 
-ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, ROOT_DIR)
-
-from app.main import app
-
-
-@pytest.fixture
-def client():
-    return TestClient(app)
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
