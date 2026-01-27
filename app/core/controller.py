@@ -3,6 +3,8 @@ from typing import Dict
 from app.engines.mock.text import MockTextEngine
 from app.engines.mock.audio import MockAudioEngine
 from app.utils.text import normalize_arabic_text
+from app.engines.audio import AudioEngine
+from app.engines.text.tajweed_engine import TajweedTextEngine
 
 
 # change engine later
@@ -56,3 +58,13 @@ def analyze_audio_controller(
         "mistakes": result["mistakes"],
         "corrections": result["corrections"],
     }
+
+class Controller:
+    def __init__(self, quran_repo):
+        self.quran_repo = quran_repo
+        self.audio_engine = AudioEngine()
+        self.text_engine = TajweedTextEngine(quran_repo)
+
+    def analyze_audio(self, audio_path: str):
+        text = self.audio_engine.analyze(audio_path)
+        return self.text_engine.analyze(text)
