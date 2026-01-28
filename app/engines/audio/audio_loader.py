@@ -1,16 +1,12 @@
-from pathlib import Path
+import subprocess
+import tempfile
 
-class AudioLoader:
-    SUPPORTED_FORMATS = {".wav", ".mp3", ".ogg"}
-
-    @staticmethod
-    def load(audio_path: str) -> Path:
-        path = Path(audio_path)
-
-        if not path.exists():
-            raise FileNotFoundError("Audio file not found")
-
-        if path.suffix.lower() not in AudioLoader.SUPPORTED_FORMATS:
-            raise ValueError("Unsupported audio format")
-
-        return path
+def load_audio(path: str):
+    import librosa
+    tmp = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
+    subprocess.run(
+        ["ffmpeg", "-y", "-i", path, "-ar", "16000", "-ac", "1", tmp.name],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    return librosa.load(tmp.name, sr=16000)

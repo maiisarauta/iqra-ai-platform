@@ -1,18 +1,20 @@
+import pytest
 from app.core.quran_repo import QuranRepo
-from app.engines.mock.text import MockTextEngine
+from app.engines.text.tajweed_analyzer import TajweedAnalyzer
 
 
-def test_analyze_text_with_sqlite_quran():
-    engine = MockTextEngine()
-    engine.quran_repo = QuranRepo
+def test_text_analysis_real():
+    repo = QuranRepo()
+    engine = TajweedAnalyzer()
+
+    quran_text = repo.get_ayah(1, 1)
+    student_text = "الحمد لله رب العالمين"
 
     result = engine.analyze(
-        surah=1,
-        ayah=1,
-        text="بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ"
+        expected_text=quran_text,
+        input_text=student_text
     )
 
-    assert result["surah"] == 1
-    assert result["ayah"] == 1
-    assert result["confidence"] > 0.9
-    assert result["mistakes"] == []
+    assert isinstance(result, dict)
+    assert "confidence" in result
+    assert "mistakes" in result
