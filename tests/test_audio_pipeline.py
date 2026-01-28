@@ -1,11 +1,17 @@
+import pytest
+librosa = pytest.importorskip("librosa")
+
 from app.engines.audio.audio_engine import AudioEngine
 
-def test_audio_pipeline_mock(tmp_path):
-    audio = tmp_path / "test.wav"
-    audio.write_bytes(b"FAKE_AUDIO")
+
+def test_audio_pipeline_real(tmp_path):
+    audio_path = tmp_path / "test.wav"
+    audio_path.write_bytes(b"RIFF....fakewavdata")
 
     engine = AudioEngine()
-    text = engine.analyze(str(audio))
+    result = engine.process(str(audio_path))
 
-    assert isinstance(text, str)
-    assert len(text) > 0
+    assert isinstance(result, dict)
+    assert "confidence" in result
+    assert "mistakes" in result
+    assert "corrections" in result

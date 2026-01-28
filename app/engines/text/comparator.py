@@ -17,6 +17,7 @@ class TextComparator:
                     "type": tag,
                     "expected": expected[i1:i2],
                     "found": actual[j1:j2],
+                    "severity": "major" if tag != "equal" else "none"
                 })
 
         return {

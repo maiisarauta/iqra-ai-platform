@@ -1,17 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Dict
-
 
 class BaseEngine(ABC):
+    @abstractmethod
+    def analyze_audio(self, path: str):
+        pass
 
     @abstractmethod
-    def analyze(self, **kwargs) -> Dict:
-        """
-        Every engine MUST return:
-        {
-          confidence: float,
-          mistakes: list,
-          corrections: list
-        }
-        """
+    def analyze_text(self, text: str):
         pass

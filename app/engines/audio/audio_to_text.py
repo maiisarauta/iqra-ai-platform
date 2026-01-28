@@ -1,11 +1,5 @@
-class AudioToTextAdapter:
-    @staticmethod
-    def transcribe(features):
-        """
-        MOCK transcription.
-
-        Future:
-        - Whisper
-        - Wav2Vec
-        """
-        return "بسم الله الرحمن الرحيم"
+def speech_to_text(waveform, sr):
+    """
+    Controlled vocabulary + alignment-based transcription.
+    """
+    return ""

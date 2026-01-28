@@ -6,7 +6,7 @@ class ArabicNormalizer:
     Rule based and configurable.
     """
 
-    HARAKAT_PATTERN = re.compile(r"[ًٌٍَُِْـ]")
+    HARAKAT_PATTERN = re.compile(r"[ًٌٍَُِّْـ]")
     TATWEEL = "ـ"
 
     ALEF_VARIANTS = {

@@ -1,70 +1,63 @@
 from typing import Dict
 
-from app.engines.mock.text import MockTextEngine
-from app.engines.mock.audio import MockAudioEngine
-from app.utils.text import normalize_arabic_text
-from app.engines.audio import AudioEngine
-from app.engines.text.tajweed_engine import TajweedTextEngine
-
-
-# change engine later
-TEXT_ENGINE = MockTextEngine()
-AUDIO_ENGINE = MockAudioEngine()
-
-
-def analyze_text_controller(
-    surah: int,
-    ayah: int,
-    text: str
-) -> Dict:
-    """
-    Orchestrates text analysis.
-    """
-    normalized_text = normalize_arabic_text(text)
-
-    result = TEXT_ENGINE.analyze(
-        surah=surah,
-        ayah=ayah,
-        text=normalized_text
-    )
-
-    return {
-        "surah": surah,
-        "ayah": ayah,
-        "confidence": result["confidence"],
-        "mistakes": result["mistakes"],
-        "corrections": result["corrections"],
-    }
-
-
-def analyze_audio_controller(
-    surah: int,
-    ayah: int,
-    audio_bytes: bytes
-) -> Dict:
-    """
-    Orchestrates audio analysis.
-    """
-    result = AUDIO_ENGINE.analyze(
-        surah=surah,
-        ayah=ayah,
-        audio_bytes=audio_bytes
-    )
-
-    return {
-        "surah": surah,
-        "ayah": ayah,
-        "confidence": result["confidence"],
-        "mistakes": result["mistakes"],
-        "corrections": result["corrections"],
-    }
+from app.engines.audio.audio_engine import AudioEngine
+from app.engines.text.tajweed_analyzer import TajweedAnalyzer
+from app.engines.quran.sqlite_loader import QuranSQLiteLoader
+from app.scoring.confidence import calculate_confidence
 
 class Controller:
-    def __init__(self, quran_repo):
-        self.quran_repo = quran_repo
-        self.audio_engine = AudioEngine()
-        self.text_engine = TajweedTextEngine(quran_repo)
+    """
+    Iqra AI Orchestrator
+    """
 
-    def analyze_audio(self, audio_path: str):
-        text = self.audio_engine.analyze(audio_path)
-        return self.text_engine.analyze(text)
+    def __init__(self):
+        self.quran_repo = QuranSqliteLoader()
+        self.audio_engine = AudioEngine()
+        self.text_engine = TajweedAnalyzer()
+
+    def analyze_text(self, surah: int, ayah: int, text: str) -> Dict:
+        expected_text = self.quran_repo.get_ayah(surah, ayah)
+
+        analysis = self.text_engine.analyze(
+            expected_text=expected_text,
+            input_text=text
+        )
+
+        confidence = calculate_confidence(
+            total_units=len(expected_text.split()),
+            text_mistakes=len(analysis["mistakes"]),
+            tajweed_mistakes=len(analysis.get("tajweed", [])),
+        )
+
+        return {
+            "surah": surah,
+            "ayah": ayah,
+            "confidence": confidence,
+            "mistakes": analysis["mistakes"],
+            "corrections": analysis.get("corrections", []),
+        }
+
+    def analyze_audio(self, surah: int, ayah: int, audio_bytes: bytes) -> Dict:
+        asr_text, audio_features = self.audio_engine.analyze(audio_bytes)
+
+        expected_text = self.quran_repo.get_ayah(surah, ayah)
+
+        analysis = self.text_engine.analyze(
+            expected_text=expected_text,
+            input_text=asr_text
+        )
+
+        confidence = calculate_confidence(
+            total_units=len(expected_text.split()),
+            text_mistakes=len(analysis["mistakes"]),
+            tajweed_mistakes=len(analysis.get("tajweed", [])),
+            audio_quality=audio_features.get("clarity"),
+        )
+
+        return {
+            "surah": surah,
+            "ayah": ayah,
+            "confidence": confidence,
+            "mistakes": analysis["mistakes"],
+            "corrections": analysis.get("corrections", []),
+        }

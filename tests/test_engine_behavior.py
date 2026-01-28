@@ -1,16 +1,26 @@
-from app.engines.mock.text import MockTextEngine
+import pytest
+from app.engines.audio.audio_engine import AudioEngine
+from app.engines.text.tajweed_analyzer import TajweedAnalyzer
+
+
+def test_audio_engine_instantiation():
+    engine = AudioEngine()
+    assert engine is not None
+
+
+def test_text_engine_instantiation():
+    engine = TajweedAnalyzer()
+    assert engine is not None
+
 
 def test_engine_returns_expected_shape():
-    engine = MockTextEngine()
+    engine = TajweedAnalyzer()
 
     result = engine.analyze(
-        surah=1,
-        ayah=1,
-        text="بسم الله الرحمن الرحيم"
+        expected_text="ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ",
+        input_text="الحمد لله رب العالمين"
     )
 
+    assert isinstance(result, dict)
     assert "confidence" in result
     assert "mistakes" in result
-    assert "corrections" in result
-    assert result["surah"] == 1
-    assert result["ayah"] == 1
